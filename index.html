@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Maltes fest - Kontakt</title>
+  <style>
+    h1 {
+      border: 4px solid gray;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      background-color: lightgray;
+      color: white;
+      font-size: 3em;
+      font-style: italic;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      border-top-width: 5px;
+      border-bottom-width: 5px;
+      border-top-style: solid;
+      border-bottom-style: solid;
+      border-top-color: gray;
+      border-bottom-color: gray;
+      transition: border-width 0.3s, color 0.3s, border-color 0.3s;
+      cursor: pointer;
+    }
+    h1:hover {
+      border-top-width: 12px;
+      border-bottom-width: 12px;
+      color: gray;
+      text-emphasis-color: gray;
+    }
+    h1 a {
+      color: inherit;
+      text-decoration: none;
+      display: block;
+    }
+    body {
+      background-image: url(ss.jpg);
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    form {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 0 10px rgba(0,0,0,0.7);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #ddd;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+
+    input:focus, textarea:focus {
+      outline: 2px solid lightgray;
+      background-color: #222;
+      color: white;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      background-color: gray;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: lightgray;
+      color: black;
+    }
+
+    #form-response {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .success-message {
+      color: #4caf50;
+    }
+
+    .error-message {
+      color: #f44336;
+    }
+  </style>
+</head>
+<body>
+  <h1>Maltes fest</h1>
+
+  <form id="contact-form" action="https://formspree.io/f/mrbawyel" method="POST">
+    <label for="name">Namn:</label>
+    <input type="text" id="name" name="name" required />
+
+    <label for="email">E-post:</label>
+    <input type="email" id="email" name="email" required />
+
+    <label for="message">Meddelande:</label>
+    <textarea id="message" name="message" rows="5" required></textarea>
+
+    <button type="submit">Skicka</button>
+  </form>
+
+  <div id="form-response"></div>
+
+  <script>
+    const form = document.getElementById('contact-form');
+    const responseDiv = document.getElementById('form-response');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch(form.action, {
+          method: form.method,
+          headers: {
+            'Accept': 'application/json'
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          responseDiv.textContent = "Tack för ditt meddelande!";
+          responseDiv.className = 'success-message';
+          form.reset();
+        } else {
+          const data = await response.json();
+          if (data.errors) {
+            responseDiv.textContent = data.errors.map(error => error.message).join(", ");
+          } else {
+            responseDiv.textContent = "Något gick fel. Försök igen.";
+          }
+          responseDiv.className = 'error-message';
+        }
+      } catch (error) {
+        responseDiv.textContent = "Nätverksfel. Försök igen senare.";
+        responseDiv.className = 'error-message';
+      }
+    });
+  </script>
+</body>
+</html>
